@@ -3,9 +3,11 @@ import BudgetProgress from "@/components/BudgetProgress";
 import CategorySpendingChart from "@/components/CategorySpendingChart";
 import TransactionList from "@/components/TransactionList";
 import AlertCard from "@/components/AlertCard";
+import AIInsightsCard from "@/components/AIInsightsCard";
 import { useLocation } from "wouter";
 import { getState, updateTransactionCategory } from "@/store";
 import { updateMerchantCategory, type Category } from "@/categorize";
+import { generateAIInsights } from "@/aiBudgetPlanner";
 import { useState, useEffect } from "react";
 
 const categoryColors: Record<string, string> = {
@@ -97,6 +99,9 @@ export default function FinanceDashboardPage() {
       // Update the merchant mapping for future auto-categorization
       updateMerchantCategory(tx.merchant, newCategory);
       
+      // Regenerate AI insights after category change
+      generateAIInsights();
+      
       // Force re-render by updating refresh key
       setRefreshKey(prev => prev + 1);
     }
@@ -117,6 +122,8 @@ export default function FinanceDashboardPage() {
         </div>
 
         <BudgetProgress total={derived.monthlyBudget} spent={derived.totalSpentThisMonth} />
+
+        <AIInsightsCard key={refreshKey} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CategorySpendingChart data={categoryData} />
