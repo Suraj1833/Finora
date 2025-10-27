@@ -302,7 +302,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           data-testid="button-open-finora"
           aria-label="Open Finora chat assistant"
           title="Chat with Finora"
-          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1200]"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1300]"
           style={{
             background: 'linear-gradient(135deg, #007AFF, #9A6CFF)',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
@@ -433,7 +433,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           </div>
 
           {/* Desktop: Floating window */}
-          <Card className="hidden md:flex fixed bottom-6 right-6 w-[420px] max-h-[70vh] shadow-2xl z-[1100] flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative overflow-hidden rounded-2xl">
+          <Card className="hidden md:flex fixed bottom-[90px] right-6 w-[420px] max-h-[70vh] shadow-2xl z-[1200] flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative overflow-hidden rounded-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
