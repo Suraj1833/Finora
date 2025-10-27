@@ -233,24 +233,33 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
 
   return (
     <>
-      {/* Floating Chat Bubble */}
+      {/* Floating Chat Bubble - WhatsApp Style */}
       {!isOpen && (
-        <Button
-          size="icon"
-          className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-primary to-purple-600 hover:scale-110 transition-transform z-50"
+        <button
           onClick={() => setIsOpen(true)}
           data-testid="button-open-finora"
+          aria-label="Open Finora chat assistant"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1000]"
+          style={{
+            backgroundColor: '#25D366',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(37, 211, 102, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
+          }}
         >
-          <MessageCircle className="h-6 w-6" />
-          <span className="sr-only">Open Finora chat</span>
-        </Button>
+          <MessageCircle className="h-6 w-6 text-white mx-auto" />
+        </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
         <>
           {/* Mobile: Full-screen modal */}
-          <div className="md:hidden fixed inset-0 bg-background z-50 flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="md:hidden fixed inset-0 bg-background z-[1000] flex flex-col animate-in slide-in-from-bottom duration-300">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
@@ -344,7 +353,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           </div>
 
           {/* Desktop: Floating window */}
-          <Card className="hidden md:block fixed bottom-6 right-6 w-[400px] h-[600px] shadow-2xl z-50 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <Card className="hidden md:block fixed bottom-24 right-6 w-[400px] h-[600px] shadow-2xl z-[1000] flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
