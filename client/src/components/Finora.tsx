@@ -124,6 +124,20 @@ export default function Finora() {
     }
   };
 
+  // Lock/unlock page scroll when chat opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('finora-lock-scroll');
+    } else {
+      document.body.classList.remove('finora-lock-scroll');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('finora-lock-scroll');
+    };
+  }, [isOpen]);
+
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen) {

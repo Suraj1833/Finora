@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Lock page scroll when Finora chat is open */
+.finora-lock-scroll {
+  overflow: hidden;
+}
+
 /* LIGHT MODE */
 :root {
   --button-outline: rgba(0,0,0, .10);

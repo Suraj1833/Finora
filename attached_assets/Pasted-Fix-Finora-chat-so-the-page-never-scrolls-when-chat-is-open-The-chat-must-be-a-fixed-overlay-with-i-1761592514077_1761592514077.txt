@@ -1,0 +1,46 @@
+Fix Finora chat so the page never scrolls when chat is open. The chat must be a fixed overlay with its own scrollable content area.
+
+Goals
+- When chat opens: lock body scroll (no page scroll).
+- Chat window stays fixed at bottom-right on desktop, full-screen on mobile.
+- Only the messages area inside the chat scrolls.
+- “Scroll to latest” button stays INSIDE the chat, positioned relative to the messages area.
+- Keep ALL existing Finora logic and styles otherwise.
+
+Implementation
+1) Chat overlay container (desktop):
+   - position: fixed; right: 24px; bottom: 24px; z-index: 1100;
+   - width: 420px; max-height: 70vh; display: flex; flex-direction: column;
+   - border-radius: 16px; box-shadow as before; theme colors unchanged.
+
+2) Mobile layout (≤ 640px):
+   - position: fixed; inset: 0; width: 100vw; height: 100vh;
+   - chat header fixed at top; content fills rest; close/back button at top-left.
+
+3) Messages area:
+   - Make the messages list the ONLY scrollable area.
+   - styles: flex: 1; overflow-y: auto; max-height: 100%;
+   - add padding-bottom: 12px; scroll-behavior: smooth;
+   - Keep auto-scroll-to-bottom useEffect when messages change.
+
+4) Scroll-to-latest button:
+   - Place it inside the messages container:
+     position: sticky; bottom: 8px; align-self: flex-end;
+     OR position: absolute; right: 12px; bottom: 12px; within a relative wrapper.
+   - It must not affect page scroll.
+
+5) Lock/unlock page scroll:
+   - On chat open: document.body.classList.add('finora-lock-scroll')
+   - On chat close: document.body.classList.remove('finora-lock-scroll')
+   - CSS:
+     .finora-lock-scroll { overflow: hidden; }
+
+6) Ensure the chat bubble remains:
+   - Bubble is position: fixed; right: 24px; bottom: 24px (16px on mobile); z-index: 1200;
+   - Opening chat does NOT move the page.
+
+7) Z-index:
+   - Bubble: 1200, Chat overlay: 1100, Backdrop (if any): 1050
+   - Alerts/toasts should appear below chat overlay.
+
+Keep existing animations, colors, auto-scroll logic, and AI responses. Only change layout/scroll behavior per above so the website never scrolls while chat is open and scrolling is contained to the chat messages area.
