@@ -1,0 +1,52 @@
+Add an AI Chat Assistant named “Finora” to the app.
+
+🎯 Goal:
+Enable users to chat naturally with the app to get quick insights about their expenses, spending patterns, and budgets — fully integrated with existing dashboard data.
+
+🧩 Functional Requirements:
+1. **Floating Chat Bubble (Desktop)**  
+   - Circular “💬” or message icon fixed at the bottom-right corner of the screen.  
+   - On click → expands upward into a chat window (around 400x500 px).  
+   - Floating bubble visible on all pages (dashboard, setup, etc.).  
+   - Clicking again or pressing “X” closes it back into a bubble.
+
+2. **Full-Screen Chat (Mobile)**  
+   - On mobile view, tapping the chat bubble opens a full-screen modal chat interface.  
+   - Includes a header with “Finora 💬” and a back (←) button.  
+   - Smooth slide-up transition.
+
+3. **Chat UI**  
+   - Dark theme matching the app.  
+   - Rounded chat bubbles with clear left (user) and right (Finora) alignment.  
+   - Scrollable chat window with auto-scroll to latest message.  
+   - Input bar at the bottom with placeholder text: “Ask Finora about your spending…” and a “Send” button.  
+   - Optional: show 3 pre-suggested prompt buttons above input:
+     - “How much did I spend on food this month?”
+     - “Which category exceeded my budget?”
+     - “What’s my total spending this month?”
+
+4. **Chat Logic (Mock AI)**  
+   - Use a simple rules-based system connected to existing store data:
+     - “total” → reply with totalSpentThisMonth
+     - “food” or “swiggy” → reply with total spent in Food category
+     - “budget” → reply with remaining and used budget
+     - “overspend” → reply with warning based on thresholds
+   - Keep responses conversational and friendly (Finora speaks like a smart financial buddy).  
+   - Store chat history in localStorage so it persists across refreshes.
+
+5. **Design & Feel**  
+   - Keep it clean, smooth, and consistent with dark purple theme.  
+   - Fade-in animation when chat window opens.  
+   - Typewriter animation for AI responses (1–2 seconds delay).  
+
+💬 Example Interaction:
+User: “How much did I spend on food this month?”
+Finora: “You’ve spent ₹4,260 on Food this month, mostly via Swiggy and Zomato 🍱.”
+
+User: “What’s my total spend this month?”
+Finora: “So far, you’ve spent ₹16,081 out of your ₹40,000 budget — about 40% used.”
+
+---
+
+Implement this end-to-end, ensuring the chat works smoothly on both desktop and mobile. 
+Make sure Finora only uses mock data from local store (no backend calls).

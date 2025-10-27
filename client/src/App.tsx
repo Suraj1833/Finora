@@ -9,6 +9,7 @@ import DashboardPage from "@/pages/dashboard";
 import FinanceDashboardPage from "@/pages/finance-dashboard";
 import SetupBudgetPage from "@/pages/setup-budget";
 import OnboardingFlow from "@/components/OnboardingFlow";
+import Finora from "@/components/Finora";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -34,6 +35,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <Finora />
       </TooltipProvider>
     </QueryClientProvider>
   );
