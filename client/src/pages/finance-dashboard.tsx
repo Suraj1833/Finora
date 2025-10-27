@@ -4,7 +4,8 @@ import CategorySpendingChart from "@/components/CategorySpendingChart";
 import TransactionList from "@/components/TransactionList";
 import AlertCard from "@/components/AlertCard";
 import { useLocation } from "wouter";
-import { getState } from "@/store";
+import { getState, updateTransactionCategory } from "@/store";
+import { updateMerchantCategory, type Category } from "@/categorize";
 import { useState, useEffect } from "react";
 
 const categoryColors: Record<string, string> = {
@@ -12,14 +13,16 @@ const categoryColors: Record<string, string> = {
   Shopping: "#ec4899",
   Travel: "#3b82f6",
   Entertainment: "#10b981",
+  Wallet: "#f59e0b",
   Other: "#64748b",
 };
 
-const categoryIcons: Record<string, "food" | "shopping" | "travel" | "entertainment" | "other"> = {
+const categoryIcons: Record<string, "food" | "shopping" | "travel" | "entertainment" | "wallet" | "other"> = {
   Food: "food",
   Shopping: "shopping",
   Travel: "travel",
   Entertainment: "entertainment",
+  Wallet: "wallet",
   Other: "other",
 };
 
@@ -46,11 +49,11 @@ function formatRelativeDate(isoDate: string): string {
 
 export default function FinanceDashboardPage() {
   const [, setLocation] = useLocation();
-  const [state, setStateLocal] = useState(getState());
+  const [refreshKey, setRefreshKey] = useState(0);
+  const state = getState();
 
   useEffect(() => {
-    // Refresh state when component mounts
-    setStateLocal(getState());
+    // Initial load - no action needed
   }, []);
 
   const { derived, transactions } = state;
@@ -84,6 +87,21 @@ export default function FinanceDashboardPage() {
     setLocation("/");
   };
 
+  const handleCategoryChange = (txId: string, newCategory: Category) => {
+    // Find the transaction to get its merchant name
+    const tx = transactions.find(t => t.id === txId);
+    if (tx) {
+      // Update the transaction category
+      updateTransactionCategory(txId, newCategory);
+      
+      // Update the merchant mapping for future auto-categorization
+      updateMerchantCategory(tx.merchant, newCategory);
+      
+      // Force re-render by updating refresh key
+      setRefreshKey(prev => prev + 1);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <AppNavbar userName="John Doe" onLogout={handleLogout} />
@@ -102,7 +120,10 @@ export default function FinanceDashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CategorySpendingChart data={categoryData} />
-          <TransactionList transactions={recentTransactions} />
+          <TransactionList 
+            transactions={recentTransactions} 
+            onCategoryChange={handleCategoryChange}
+          />
         </div>
 
         {showShoppingAlert && (

@@ -1,4 +1,5 @@
 // Client-side state store with localStorage persistence
+import { categorize, type Category } from "./categorize";
 
 export interface Account {
   id: string;
@@ -13,7 +14,7 @@ export interface Transaction {
   merchant: string;
   amount: number;
   dateISO: string;
-  category: string;
+  category: Category;
   notes?: string;
 }
 
@@ -137,15 +138,28 @@ export function removeAccount(id: string): boolean {
 }
 
 // Add a new transaction
-export function addTx(tx: Omit<Transaction, "id">): Transaction {
+export function addTx(tx: Omit<Transaction, "id" | "category"> & { category?: Category }): Transaction {
   const newTx: Transaction = {
     ...tx,
     id: `tx${Date.now()}`,
+    category: tx.category || categorize(tx.merchant),
   };
   currentState.transactions.push(newTx);
   persistState();
   recalcDerived();
   return newTx;
+}
+
+// Update transaction category
+export function updateTransactionCategory(txId: string, category: Category): boolean {
+  const tx = currentState.transactions.find(t => t.id === txId);
+  if (tx) {
+    tx.category = category;
+    persistState();
+    recalcDerived();
+    return true;
+  }
+  return false;
 }
 
 // Recalculate derived state

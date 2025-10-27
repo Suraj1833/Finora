@@ -1,7 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingBag, Utensils, Car, Film, MoreHorizontal } from "lucide-react";
+import { ShoppingBag, Utensils, Car, Film, MoreHorizontal, Wallet } from "lucide-react";
 import { LucideIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { CATEGORIES, type Category } from "@/categorize";
 
 export interface Transaction {
   id: string;
@@ -9,12 +16,13 @@ export interface Transaction {
   category: string;
   amount: number;
   date: string;
-  icon?: "food" | "shopping" | "travel" | "entertainment" | "other";
+  icon?: "food" | "shopping" | "travel" | "entertainment" | "wallet" | "other";
 }
 
 interface TransactionListProps {
   transactions: Transaction[];
   currency?: string;
+  onCategoryChange?: (txId: string, newCategory: Category) => void;
 }
 
 const iconMap: Record<string, LucideIcon> = {
@@ -22,6 +30,7 @@ const iconMap: Record<string, LucideIcon> = {
   shopping: ShoppingBag,
   travel: Car,
   entertainment: Film,
+  wallet: Wallet,
   other: MoreHorizontal,
 };
 
@@ -30,10 +39,15 @@ const categoryColors: Record<string, string> = {
   Shopping: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300",
   Travel: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
   Entertainment: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300",
+  Wallet: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300",
   Other: "bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300",
 };
 
-export default function TransactionList({ transactions, currency = "₹" }: TransactionListProps) {
+export default function TransactionList({ 
+  transactions, 
+  currency = "₹",
+  onCategoryChange 
+}: TransactionListProps) {
   const formatAmount = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
       minimumFractionDigits: 0,
@@ -65,12 +79,43 @@ export default function TransactionList({ transactions, currency = "₹" }: Tran
                   </p>
                   <div className="flex items-center gap-2">
                     <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                    <Badge 
-                      variant="secondary" 
-                      className={`text-xs ${categoryColors[transaction.category] || categoryColors.Other}`}
-                    >
-                      {transaction.category}
-                    </Badge>
+                    {onCategoryChange ? (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button 
+                            className="focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-sm"
+                            data-testid={`badge-category-${transaction.id}`}
+                          >
+                            <Badge 
+                              variant="secondary" 
+                              className={`text-xs cursor-pointer hover-elevate ${categoryColors[transaction.category] || categoryColors.Other}`}
+                            >
+                              {transaction.category}
+                            </Badge>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          {CATEGORIES.map((cat) => (
+                            <DropdownMenuItem
+                              key={cat}
+                              onClick={() => onCategoryChange(transaction.id, cat)}
+                              data-testid={`menu-category-${cat.toLowerCase()}`}
+                            >
+                              <span className={categoryColors[cat] || categoryColors.Other}>
+                                {cat}
+                              </span>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
+                      <Badge 
+                        variant="secondary" 
+                        className={`text-xs ${categoryColors[transaction.category] || categoryColors.Other}`}
+                      >
+                        {transaction.category}
+                      </Badge>
+                    )}
                   </div>
                 </div>
                 <p className="font-semibold font-mono text-destructive" data-testid={`text-amount-${transaction.id}`}>
