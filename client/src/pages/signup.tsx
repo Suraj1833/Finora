@@ -7,16 +7,17 @@ export default function SignupPage() {
 
   const handleSignup = () => {
     // Mark as first-time user on signup
-    updateUserOnboarding({ isFirstTime: true, hasConnectedAccounts: false, hasSetBudget: false });
+    updateUserOnboarding({
+      isFirstTime: true,
+      hasConnectedAccounts: false,
+      hasSetBudget: false,
+    });
     setLocation("/connect");
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-      <SignupCard 
-        onGoogleSignup={handleSignup}
-        onPhoneSignup={handleSignup}
-      />
+      <SignupCard onGoogleSignup={handleSignup} onPhoneSignup={handleSignup} />
     </div>
   );
 }
