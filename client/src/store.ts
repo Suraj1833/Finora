@@ -106,8 +106,23 @@ let currentState: AppState = (() => {
     if (stored) {
       const parsed = JSON.parse(stored);
       // Convert spendByCategory back to Map
-      parsed.derived.spendByCategory = new Map(Object.entries(parsed.derived.spendByCategory || {}));
-      return parsed;
+      if (parsed.derived) {
+        parsed.derived.spendByCategory = new Map(Object.entries(parsed.derived.spendByCategory || {}));
+      }
+      // Merge with initialState to ensure all required properties exist
+      return {
+        ...initialState,
+        ...parsed,
+        derived: {
+          ...initialState.derived,
+          ...(parsed.derived || {}),
+          spendByCategory: parsed.derived?.spendByCategory || new Map(),
+        },
+        user: {
+          ...initialState.user,
+          ...(parsed.user || {}),
+        },
+      };
     }
   } catch (error) {
     console.warn("Failed to load state from localStorage:", error);

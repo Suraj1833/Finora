@@ -20,6 +20,7 @@ function Router() {
         <Route path="/connect" component={ConnectAccountsPage} />
         <Route path="/setup-budget" component={SetupBudgetPage} />
         <Route path="/dashboard" component={FinanceDashboardPage} />
+        <Route path="/finance-dashboard" component={FinanceDashboardPage} />
         <Route path="/accounts" component={DashboardPage} />
         <Route component={NotFound} />
       </Switch>
