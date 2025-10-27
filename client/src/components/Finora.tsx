@@ -302,7 +302,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           data-testid="button-open-finora"
           aria-label="Open Finora chat assistant"
           title="Chat with Finora"
-          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1000]"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1200]"
           style={{
             background: 'linear-gradient(135deg, #007AFF, #9A6CFF)',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
@@ -322,7 +322,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
       {isOpen && (
         <>
           {/* Mobile: Full-screen modal */}
-          <div className="md:hidden fixed inset-0 bg-background z-[1000] flex flex-col animate-in slide-in-from-bottom duration-300">
+          <div className="md:hidden fixed inset-0 bg-background z-[1100] flex flex-col animate-in slide-in-from-bottom duration-300">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
@@ -345,6 +345,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
               ref={mobileMessagesContainerRef}
               onScroll={handleMobileScroll}
               className="flex-1 overflow-y-auto p-4 space-y-4 pb-3 relative"
+              style={{ scrollBehavior: 'smooth' }}
             >
               {messages.map((msg) => (
                 <div
@@ -432,7 +433,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           </div>
 
           {/* Desktop: Floating window */}
-          <Card className="hidden md:block fixed bottom-24 right-6 w-[400px] h-[600px] shadow-2xl z-[1000] flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative">
+          <Card className="hidden md:flex fixed bottom-6 right-6 w-[420px] max-h-[70vh] shadow-2xl z-[1100] flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative overflow-hidden rounded-2xl">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
@@ -455,7 +456,8 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
             <div 
               ref={desktopMessagesContainerRef}
               onScroll={handleDesktopScroll}
-              className="flex-1 overflow-y-auto p-4 space-y-4 pb-3"
+              className="flex-1 overflow-y-auto p-4 space-y-4 pb-3 max-h-full"
+              style={{ scrollBehavior: 'smooth' }}
             >
               {messages.map((msg) => (
                 <div
