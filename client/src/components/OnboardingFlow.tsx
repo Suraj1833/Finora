@@ -13,24 +13,26 @@ export default function OnboardingFlow({
     const state = getState();
     const { user, accounts } = state;
 
-    // Safety check - ensure user object exists
-    if (!user) {
-      return;
-    }
-
-    // For root path, check if user should be redirected
-    if (location === "/" || location === "/signup") {
-      // If returning user (completed onboarding), go to dashboard
-      if (!user.isFirstTime && user.hasSetBudget) {
+    // Skip onboarding flow logic for login/signup paths
+    const authPaths = ["/", "/login", "/signup"];
+    if (authPaths.includes(location)) {
+      // If returning user (completed onboarding), redirect to dashboard
+      if (user && !user.isFirstTime && user.hasSetBudget && user.hasConnectedAccounts) {
         setLocation("/dashboard");
         return;
       }
-      // Otherwise, let new users see signup page
+      // Otherwise, let users see login/signup page
+      return;
+    }
+
+    // Safety check - ensure user object exists for protected routes
+    if (!user || (user.isFirstTime && !user.hasConnectedAccounts)) {
+      setLocation("/login");
       return;
     }
 
     // Skip onboarding flow logic for these paths
-    const excludedPaths = ["/connect", "/setup-budget", "/signin"];
+    const excludedPaths = ["/connect", "/setup-budget"];
     if (excludedPaths.includes(location)) {
       return;
     }

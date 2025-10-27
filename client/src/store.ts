@@ -41,6 +41,9 @@ interface AppState {
 
 const STORAGE_KEY = "autotrack_state";
 
+// Counter for ensuring unique IDs
+let idCounter = 0;
+
 // Store subscribers - notify when state changes
 type Subscriber = () => void;
 const subscribers: Set<Subscriber> = new Set();
@@ -158,11 +161,49 @@ export function setState(patch: Partial<AppState>) {
   persistState();
 }
 
+// Reset state to logged out (empty) state
+export function resetState() {
+  const emptyState: AppState = {
+    accounts: [],
+    transactions: [],
+    derived: {
+      totalSpentThisMonth: 0,
+      spendByCategory: new Map(),
+      monthlyBudget: 0,
+      spentPercent: 0,
+      upcomingRecurring: [],
+    },
+    user: {
+      isFirstTime: true,
+      hasConnectedAccounts: false,
+      hasSetBudget: false,
+    },
+  };
+  currentState = emptyState;
+  
+  // Persist empty state to localStorage to prevent reload from restoring mock data
+  try {
+    const stateToSave = {
+      ...emptyState,
+      derived: {
+        ...emptyState.derived,
+        spendByCategory: Object.fromEntries(emptyState.derived.spendByCategory),
+      },
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+  } catch (error) {
+    console.error("Failed to persist logged out state:", error);
+  }
+  
+  localStorage.removeItem('chatHistory');
+  notifySubscribers();
+}
+
 // Add a new account
 export function addAccount(account: Omit<Account, "id">): Account {
   const newAccount: Account = {
     ...account,
-    id: `acc${Date.now()}`,
+    id: `acc${Date.now()}_${idCounter++}`,
   };
   currentState.accounts.push(newAccount);
   persistState();
@@ -184,7 +225,7 @@ export function removeAccount(id: string): boolean {
 export function addTx(tx: Omit<Transaction, "id" | "category"> & { category?: Category }): Transaction {
   const newTx: Transaction = {
     ...tx,
-    id: `tx${Date.now()}`,
+    id: `tx${Date.now()}_${idCounter++}`,
     category: tx.category || categorize(tx.merchant),
   };
   currentState.transactions.push(newTx);

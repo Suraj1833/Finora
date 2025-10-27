@@ -13,6 +13,7 @@ import { Moon, Sun, User } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { resetState } from "@/store";
 
 interface AppNavbarProps {
   userName?: string;
@@ -44,11 +45,7 @@ export default function AppNavbar({ userName, onLogout }: AppNavbarProps) {
   };
 
   const handleConfirmLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('accounts');
-    localStorage.removeItem('budget');
-    localStorage.removeItem('transactions');
-    localStorage.removeItem('chatHistory');
+    resetState();
     
     setShowLogoutDialog(false);
     
@@ -60,7 +57,7 @@ export default function AppNavbar({ userName, onLogout }: AppNavbarProps) {
     if (onLogout) {
       onLogout();
     } else {
-      setLocation("/");
+      setLocation("/login");
     }
   };
 
