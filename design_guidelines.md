@@ -1,4 +1,4 @@
-# AutoTrack Design Guidelines
+# Finora Design Guidelines
 
 ## Design Approach
 

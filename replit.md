@@ -1,8 +1,8 @@
-# AutoTrack - Financial Dashboard Application
+# Finora - Financial Dashboard Application
 
 ## Overview
 
-AutoTrack is a comprehensive financial management application that enables users to connect and monitor multiple financial accounts (bank accounts, UPI payments, digital wallets, credit cards, and cryptocurrency) in a unified dashboard. The application provides expense tracking, budget management, transaction categorization, and financial insights through an intuitive, fintech-inspired interface.
+Finora is a comprehensive financial management application that enables users to connect and monitor multiple financial accounts (bank accounts, UPI payments, digital wallets, credit cards, and cryptocurrency) in a unified dashboard. The application provides expense tracking, budget management, transaction categorization, and financial insights through an intuitive, fintech-inspired interface.
 
 The project is structured as a full-stack TypeScript application with a React frontend and Express backend, utilizing Drizzle ORM for database operations and shadcn/ui components for a polished user experience.
 

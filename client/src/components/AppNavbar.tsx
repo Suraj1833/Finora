@@ -29,9 +29,9 @@ export default function AppNavbar({ userName, onLogout }: AppNavbarProps) {
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-lg font-bold text-primary-foreground font-mono">AT</span>
+            <span className="text-lg font-bold text-primary-foreground font-mono">F</span>
           </div>
-          <span className="text-xl font-bold" data-testid="text-app-name">AutoTrack</span>
+          <span className="text-xl font-bold" data-testid="text-app-name">Finora</span>
         </div>
         <div className="flex items-center gap-2">
           <Button
