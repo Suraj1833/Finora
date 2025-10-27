@@ -2,8 +2,8 @@ import AppNavbar from "@/components/AppNavbar";
 import BudgetProgress from "@/components/BudgetProgress";
 import CategorySpendingChart from "@/components/CategorySpendingChart";
 import TransactionList from "@/components/TransactionList";
-import AlertCard from "@/components/AlertCard";
 import AIInsightsCard from "@/components/AIInsightsCard";
+import AlertsSystem from "@/components/AlertsSystem";
 import { useLocation } from "wouter";
 import { getState, updateTransactionCategory } from "@/store";
 import { updateMerchantCategory, type Category } from "@/categorize";
@@ -79,10 +79,6 @@ export default function FinanceDashboardPage() {
       icon: categoryIcons[tx.category] || "other",
     }));
 
-  // Check if nearing budget limit for any category
-  const shoppingSpent = derived.spendByCategory.get("Shopping") || 0;
-  const showShoppingAlert = shoppingSpent > 4000;
-
   const handleLogout = () => {
     console.log('Logging out...');
     setLocation("/");
@@ -106,6 +102,7 @@ export default function FinanceDashboardPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <AlertsSystem />
       <AppNavbar userName="John Doe" onLogout={handleLogout} />
       
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 space-y-6">
@@ -129,15 +126,6 @@ export default function FinanceDashboardPage() {
             onCategoryChange={handleCategoryChange}
           />
         </div>
-
-        {showShoppingAlert && (
-          <AlertCard 
-            message="You are nearing your shopping budget limit."
-            variant="warning"
-          />
-        )}
-
-        {/* TODO: Upcoming features placeholders - Multi-Account Integration, Smart Expense Categorization, AI Budget Planner, Predictive Alerts & Smart Nudges, AI Chat Assistant, Insight Dashboard, Data Security & Privacy */}
       </div>
     </div>
   );
