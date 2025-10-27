@@ -433,7 +433,16 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           </div>
 
           {/* Desktop: Floating window */}
-          <Card className="hidden md:flex fixed bottom-[90px] right-6 w-[420px] max-h-[70vh] shadow-2xl z-[1200] flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative overflow-hidden rounded-2xl">
+          <Card 
+            className="hidden md:flex fixed shadow-2xl flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 overflow-hidden rounded-2xl"
+            style={{
+              right: '24px',
+              bottom: '90px',
+              width: '420px',
+              maxHeight: '70vh',
+              zIndex: 1200,
+            }}
+          >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
