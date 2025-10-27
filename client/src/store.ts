@@ -26,10 +26,17 @@ export interface DerivedState {
   upcomingRecurring: Array<{ merchant: string; avgAmount: number; lastDate: string }>;
 }
 
+export interface UserOnboardingState {
+  isFirstTime: boolean;
+  hasConnectedAccounts: boolean;
+  hasSetBudget: boolean;
+}
+
 interface AppState {
   accounts: Account[];
   transactions: Transaction[];
   derived: DerivedState;
+  user: UserOnboardingState;
 }
 
 const STORAGE_KEY = "autotrack_state";
@@ -84,6 +91,11 @@ const initialState: AppState = {
     monthlyBudget: 40000,
     spentPercent: 0,
     upcomingRecurring: [],
+  },
+  user: {
+    isFirstTime: false,
+    hasConnectedAccounts: true,
+    hasSetBudget: true,
   },
 };
 
@@ -202,8 +214,8 @@ export function recalcDerived() {
     spendByCategory.set(tx.category, current + tx.amount);
   });
 
-  // Monthly budget
-  const monthlyBudget = 40000;
+  // Keep existing monthly budget (don't overwrite with hardcoded value)
+  const monthlyBudget = currentState.derived.monthlyBudget;
 
   // Spent percentage
   const spentPercent = (totalSpentThisMonth / monthlyBudget) * 100;
@@ -243,6 +255,30 @@ export function recalcDerived() {
   };
 
   persistState();
+}
+
+// User onboarding functions
+export function updateUserOnboarding(updates: Partial<UserOnboardingState>) {
+  currentState.user = { ...currentState.user, ...updates };
+  persistState();
+  notifySubscribers();
+}
+
+export function setMonthlyBudget(budget: number) {
+  currentState.derived.monthlyBudget = budget;
+  persistState();
+  recalcDerived();
+  notifySubscribers();
+}
+
+export function completeOnboarding() {
+  currentState.user = {
+    isFirstTime: false,
+    hasConnectedAccounts: true,
+    hasSetBudget: true,
+  };
+  persistState();
+  notifySubscribers();
 }
 
 // Initialize derived state on load

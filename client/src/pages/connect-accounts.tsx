@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import AccountConnectionCard from "@/components/AccountConnectionCard";
 import AppNavbar from "@/components/AppNavbar";
 import { ArrowRight } from "lucide-react";
+import { updateUserOnboarding } from "@/store";
 
 export default function ConnectAccountsPage() {
   const [, setLocation] = useLocation();
@@ -30,7 +31,17 @@ export default function ConnectAccountsPage() {
   const hasAnyConnection = Object.values(connectedAccounts).some(Boolean);
 
   const handleContinue = () => {
-    setLocation("/dashboard");
+    // Mark accounts as connected in onboarding state
+    updateUserOnboarding({ hasConnectedAccounts: true });
+    
+    // Navigate to setup budget or dashboard
+    setLocation("/setup-budget");
+  };
+
+  const handleSkip = () => {
+    // User skipped account connection
+    updateUserOnboarding({ hasConnectedAccounts: false });
+    setLocation("/setup-budget");
   };
 
   return (
@@ -80,7 +91,7 @@ export default function ConnectAccountsPage() {
         <div className="flex justify-center gap-4">
           <Button
             variant="outline"
-            onClick={() => setLocation("/dashboard")}
+            onClick={handleSkip}
             data-testid="button-skip"
           >
             Skip for Now
@@ -91,7 +102,7 @@ export default function ConnectAccountsPage() {
             className="gap-2"
             data-testid="button-continue"
           >
-            Continue to Dashboard
+            Continue
             <ArrowRight className="h-4 w-4" />
           </Button>
         </div>

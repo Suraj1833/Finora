@@ -7,17 +7,23 @@ import SignupPage from "@/pages/signup";
 import ConnectAccountsPage from "@/pages/connect-accounts";
 import DashboardPage from "@/pages/dashboard";
 import FinanceDashboardPage from "@/pages/finance-dashboard";
+import SetupBudgetPage from "@/pages/setup-budget";
+import OnboardingFlow from "@/components/OnboardingFlow";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/" component={SignupPage} />
-      <Route path="/connect" component={ConnectAccountsPage} />
-      <Route path="/dashboard" component={FinanceDashboardPage} />
-      <Route path="/accounts" component={DashboardPage} />
-      <Route component={NotFound} />
-    </Switch>
+    <OnboardingFlow>
+      <Switch>
+        <Route path="/" component={SignupPage} />
+        <Route path="/signup" component={SignupPage} />
+        <Route path="/connect" component={ConnectAccountsPage} />
+        <Route path="/setup-budget" component={SetupBudgetPage} />
+        <Route path="/dashboard" component={FinanceDashboardPage} />
+        <Route path="/accounts" component={DashboardPage} />
+        <Route component={NotFound} />
+      </Switch>
+    </OnboardingFlow>
   );
 }
 
