@@ -2,7 +2,7 @@ import AccountConnectionCard from '../AccountConnectionCard';
 
 export default function AccountConnectionCardExample() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl">
       <AccountConnectionCard
         type="bank"
         title="Bank Account"
@@ -20,6 +20,12 @@ export default function AccountConnectionCardExample() {
         title="Digital Wallet"
         description="Sync wallet balance and transactions"
         onConnect={() => console.log('Connect wallet triggered')}
+      />
+      <AccountConnectionCard
+        type="credit-card"
+        title="Credit Card"
+        description="Track credit card spending and payments"
+        onConnect={() => console.log('Connect credit card triggered')}
       />
     </div>
   );

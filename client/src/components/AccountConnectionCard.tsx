@@ -1,10 +1,10 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Building2, Smartphone, Wallet, CheckCircle2 } from "lucide-react";
+import { Building2, Smartphone, Wallet, CreditCard, CheckCircle2 } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
-export type AccountType = "bank" | "upi" | "wallet";
+export type AccountType = "bank" | "upi" | "wallet" | "credit-card";
 
 export interface AccountConnectionCardProps {
   type: AccountType;
@@ -18,6 +18,7 @@ const iconMap: Record<AccountType, LucideIcon> = {
   bank: Building2,
   upi: Smartphone,
   wallet: Wallet,
+  "credit-card": CreditCard,
 };
 
 export default function AccountConnectionCard({

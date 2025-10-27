@@ -11,13 +11,15 @@ export default function ConnectAccountsPage() {
     bank: boolean;
     upi: boolean;
     wallet: boolean;
+    "credit-card": boolean;
   }>({
     bank: false,
     upi: false,
     wallet: false,
+    "credit-card": false,
   });
 
-  const handleConnect = (type: "bank" | "upi" | "wallet") => {
+  const handleConnect = (type: "bank" | "upi" | "wallet" | "credit-card") => {
     console.log(`Connecting ${type}`);
     setConnectedAccounts(prev => ({
       ...prev,
@@ -44,7 +46,7 @@ export default function ConnectAccountsPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <AccountConnectionCard
             type="bank"
             title="Bank Account"
@@ -65,6 +67,13 @@ export default function ConnectAccountsPage() {
             description="Sync wallet balance and transactions"
             connected={connectedAccounts.wallet}
             onConnect={() => handleConnect("wallet")}
+          />
+          <AccountConnectionCard
+            type="credit-card"
+            title="Credit Card"
+            description="Track credit card spending and payments"
+            connected={connectedAccounts["credit-card"]}
+            onConnect={() => handleConnect("credit-card")}
           />
         </div>
 
