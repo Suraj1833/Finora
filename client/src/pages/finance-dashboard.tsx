@@ -89,74 +89,7 @@ export default function FinanceDashboardPage() {
           variant="warning"
         />
 
-        <div className="bg-card rounded-lg border border-card-border p-6">
-          <h2 className="text-xl font-semibold mb-4">Upcoming Features</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">1</span>
-              </div>
-              <div>
-                <p className="font-semibold">Multi-Account Integration</p>
-                <p className="text-muted-foreground">Connect banks, UPI, cards, and crypto wallets in one place</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">2</span>
-              </div>
-              <div>
-                <p className="font-semibold">Smart Expense Categorization</p>
-                <p className="text-muted-foreground">AI auto-categorizes merchants like Swiggy→Food, Uber→Travel</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">3</span>
-              </div>
-              <div>
-                <p className="font-semibold">AI Budget Planner</p>
-                <p className="text-muted-foreground">Personalized budgets with predictive adjustments based on spending patterns</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">4</span>
-              </div>
-              <div>
-                <p className="font-semibold">Predictive Alerts & Smart Nudges</p>
-                <p className="text-muted-foreground">Get warnings before you overspend in any category</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">5</span>
-              </div>
-              <div>
-                <p className="font-semibold">AI Chat Assistant</p>
-                <p className="text-muted-foreground">Ask questions like "How much did I spend on food this month?"</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">6</span>
-              </div>
-              <div>
-                <p className="font-semibold">Insight Dashboard</p>
-                <p className="text-muted-foreground">Total spend, remaining budget, category highlights, and savings insights</p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-semibold text-primary">7</span>
-              </div>
-              <div>
-                <p className="font-semibold">Data Security & Privacy</p>
-                <p className="text-muted-foreground">Bank-grade encryption and compliance with data protection standards</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* TODO: Upcoming features placeholders - Multi-Account Integration, Smart Expense Categorization, AI Budget Planner, Predictive Alerts & Smart Nudges, AI Chat Assistant, Insight Dashboard, Data Security & Privacy */}
       </div>
     </div>
   );
