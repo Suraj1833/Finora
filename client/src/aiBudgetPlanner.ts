@@ -134,12 +134,14 @@ function identifyOverspending(
   return overspending;
 }
 
-// Main function to generate AI insights
-export function generateAIInsights(): AIBudgetInsights {
-  const state = getState();
-  const { transactions } = state;
+// Main function to recalculate AI insights with fresh data
+export function recalcAIInsights(): AIBudgetInsights {
+  // Always fetch fresh data from store
+  const { transactions, derived } = getState();
   
-  // Calculate metrics
+  console.log('AI Insights updated');
+  
+  // Calculate metrics using fresh transaction data
   const categoryAverages = calculateCategoryAverages(transactions);
   const categoryBudgets = calculateSuggestedBudgets(categoryAverages);
   const projectedSpend = predictMonthEndSpend(transactions);
@@ -163,7 +165,7 @@ export function generateAIInsights(): AIBudgetInsights {
     lastUpdated: new Date().toISOString(),
   };
   
-  // Save to localStorage
+  // Save to localStorage after calculation
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(insights));
   } catch (error) {
@@ -173,33 +175,7 @@ export function generateAIInsights(): AIBudgetInsights {
   return insights;
 }
 
-// Load cached insights from localStorage
-export function loadCachedInsights(): AIBudgetInsights | null {
-  try {
-    const cached = localStorage.getItem(STORAGE_KEY);
-    if (cached) {
-      return JSON.parse(cached);
-    }
-  } catch (error) {
-    console.warn("Failed to load cached AI insights:", error);
-  }
-  return null;
-}
-
-// Get insights (from cache if recent, otherwise regenerate)
+// Get AI insights - always recalculates with fresh data
 export function getAIInsights(): AIBudgetInsights {
-  const cached = loadCachedInsights();
-  
-  // If cached and less than 1 hour old, use it
-  if (cached && cached.lastUpdated) {
-    const cacheAge = Date.now() - new Date(cached.lastUpdated).getTime();
-    const oneHour = 60 * 60 * 1000;
-    
-    if (cacheAge < oneHour) {
-      return cached;
-    }
-  }
-  
-  // Otherwise, generate fresh insights
-  return generateAIInsights();
+  return recalcAIInsights();
 }

@@ -1,28 +1,33 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getAIInsights, type AIBudgetInsights } from "@/aiBudgetPlanner";
+import { recalcAIInsights, type AIBudgetInsights } from "@/aiBudgetPlanner";
+import { subscribe } from "@/store";
 
-interface AIInsightsCardProps {
-  onUpdate?: () => void;
-}
-
-export default function AIInsightsCard({ onUpdate }: AIInsightsCardProps) {
+export default function AIInsightsCard() {
   const [insights, setInsights] = useState<AIBudgetInsights | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Generate insights
-    const freshInsights = getAIInsights();
+    // Always fetch fresh insights on mount
+    const freshInsights = recalcAIInsights();
     setInsights(freshInsights);
     
     // Trigger fade-in animation
     setTimeout(() => setIsVisible(true), 100);
     
-    if (onUpdate) {
-      onUpdate();
-    }
-  }, [onUpdate]);
+    // Subscribe to store changes
+    const unsubscribe = subscribe(() => {
+      // Recalculate insights when transactions/categories change
+      const updatedInsights = recalcAIInsights();
+      setInsights(updatedInsights);
+    });
+    
+    // Cleanup subscription on unmount
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   if (!insights) {
     return null;

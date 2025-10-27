@@ -7,7 +7,6 @@ import AIInsightsCard from "@/components/AIInsightsCard";
 import { useLocation } from "wouter";
 import { getState, updateTransactionCategory } from "@/store";
 import { updateMerchantCategory, type Category } from "@/categorize";
-import { generateAIInsights } from "@/aiBudgetPlanner";
 import { useState, useEffect } from "react";
 
 const categoryColors: Record<string, string> = {
@@ -99,10 +98,8 @@ export default function FinanceDashboardPage() {
       // Update the merchant mapping for future auto-categorization
       updateMerchantCategory(tx.merchant, newCategory);
       
-      // Regenerate AI insights after category change
-      generateAIInsights();
-      
       // Force re-render by updating refresh key
+      // Note: AI insights will auto-update via store.subscribe()
       setRefreshKey(prev => prev + 1);
     }
   };
@@ -123,7 +120,7 @@ export default function FinanceDashboardPage() {
 
         <BudgetProgress total={derived.monthlyBudget} spent={derived.totalSpentThisMonth} />
 
-        <AIInsightsCard key={refreshKey} />
+        <AIInsightsCard />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <CategorySpendingChart data={categoryData} />

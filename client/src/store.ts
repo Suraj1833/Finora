@@ -34,6 +34,22 @@ interface AppState {
 
 const STORAGE_KEY = "autotrack_state";
 
+// Store subscribers - notify when state changes
+type Subscriber = () => void;
+const subscribers: Set<Subscriber> = new Set();
+
+export function subscribe(callback: Subscriber): () => void {
+  subscribers.add(callback);
+  // Return unsubscribe function
+  return () => {
+    subscribers.delete(callback);
+  };
+}
+
+function notifySubscribers() {
+  subscribers.forEach(callback => callback());
+}
+
 // Initialize with mock data
 const initialState: AppState = {
   accounts: [
@@ -147,6 +163,7 @@ export function addTx(tx: Omit<Transaction, "id" | "category"> & { category?: Ca
   currentState.transactions.push(newTx);
   persistState();
   recalcDerived();
+  notifySubscribers();
   return newTx;
 }
 
@@ -157,6 +174,7 @@ export function updateTransactionCategory(txId: string, category: Category): boo
     tx.category = category;
     persistState();
     recalcDerived();
+    notifySubscribers();
     return true;
   }
   return false;
