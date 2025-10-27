@@ -58,8 +58,8 @@ export default function SetupBudgetPage() {
                   }}
                   className="pl-9"
                   data-testid="input-budget"
-                  min="1"
-                  step="100"
+                  min="0"
+                  step="1"
                   required
                 />
               </div>
