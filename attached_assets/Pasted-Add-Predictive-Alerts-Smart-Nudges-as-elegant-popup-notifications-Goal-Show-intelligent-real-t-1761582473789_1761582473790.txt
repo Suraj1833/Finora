@@ -1,0 +1,49 @@
+Add Predictive Alerts & Smart Nudges as elegant popup notifications:
+
+Goal:
+Show intelligent, real-time popup alerts when users overspend or approach budget limits.
+Popups should be readable, visually clean, and dismissible.
+
+1. Location & Layout:
+   - Display alert as a floating popup card:
+       * On desktop: top-right corner of the dashboard.
+       * On mobile: bottom-center of the screen.
+   - Each popup should have:
+       * Small icon (💡 ⚠️ 🚨) based on alert type.
+       * Short readable message (max 2 lines).
+       * A visible “✖” close button on top-right.
+   - Use rounded corners, soft shadow, and fade-in + slide-up animation.
+   - When dismissed, popup fades out smoothly.
+
+2. Trigger Logic:
+   - Use live data from store.ts:
+       * If totalSpentThisMonth > 0.9 * monthlyBudget → ⚠️ warning popup:
+         “You’ve used over 90% of your monthly budget.”
+       * If totalSpentThisMonth > monthlyBudget → 🚨 danger popup:
+         “You’ve exceeded your monthly budget by ₹{excessAmount}.”
+       * If any category spend > 0.85 * avgCategoryLimit → 💡 info popup:
+         “You’re nearing your {category} budget limit.”
+   - Multiple alerts can appear (stack vertically, max 2 at once).
+
+3. Behavior:
+   - Popup auto-dismisses after 10 seconds if not manually closed.
+   - User can click “✖” to close immediately.
+   - Once closed, mark as resolved in localStorage (to prevent repeat alerts unless new thresholds are hit).
+   - Alerts update live whenever transactions or budgets change.
+
+4. Styling:
+   - Colors:
+       * Info → Purple gradient background (💡)
+       * Warning → Amber/yellow background (⚠️)
+       * Danger → Red background (🚨)
+   - Text color: white or near-white for contrast.
+   - Font size: 14–15px for readability.
+   - Small slide animation (translateY + opacity).
+
+5. Accessibility:
+   - Ensure alert text is readable on mobile and desktop.
+   - Add `aria-live="polite"` so screen readers announce alerts.
+
+Result:
+Create a clean, dynamic predictive alert popup system that appears only when necessary,
+can be dismissed easily, and makes the Finora dashboard feel intelligent and alive.
