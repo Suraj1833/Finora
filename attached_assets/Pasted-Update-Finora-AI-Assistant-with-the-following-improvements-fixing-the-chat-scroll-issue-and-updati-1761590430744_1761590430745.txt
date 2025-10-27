@@ -1,0 +1,63 @@
+Update Finora AI Assistant with the following improvements — fixing the chat scroll issue and updating the chat bubble’s look and feel:
+
+🎯 GOALS:
+- Keep all existing Finora functionality, logic, and AI responses unchanged.
+- Fix chat window overflow/scroll issue.
+- Redesign the chat bubble to match the WhatsApp AI icon style (blue–purple gradient, circular, modern).
+
+---
+
+💬 1. FIX CHAT AUTO-SCROLL ISSUE
+When new messages appear, the chat window should always scroll to the bottom automatically. 
+Ensure smooth scrolling and no content overflow.
+
+Implementation details:
+- Use a ref on the chat container and scroll it to the latest message every time the messages array updates.
+- Add smooth scroll behavior and prevent message overflow.
+- Add bottom padding (12px) so the last message doesn’t stick to the edge.
+- Ensure this works for both user and Finora messages without delay.
+
+Result:
+✅ New messages always visible.
+✅ No cutoff or overflow.
+✅ Chat stays within window height (no jumping out).
+
+---
+
+💬 2. RESTYLE CHAT BUBBLE (MATCH WHATSAPP AI ICON)
+Keep the circular floating button layout, but style it like WhatsApp’s AI icon with Finora branding:
+
+🎨 Design Specs:
+- Shape: Perfect circle (56x56px)
+- Background: linear-gradient(135deg, #007AFF, #9A6CFF)
+- Icon: White chat icon, centered
+- Shadow: 0 4px 12px rgba(0, 0, 0, 0.25)
+- Hover: Scale up slightly (1.05) + soft glow (rgba(154,108,255,0.4))
+- Cursor: Pointer
+- No green color anywhere.
+
+📍 Position:
+- Fixed bottom-right corner (24px from right & bottom on desktop)
+- 16px spacing on mobile
+- Z-index: 1000 (always above content)
+- Consistent across all app pages (dashboard, setup, onboarding, etc.)
+
+Behavior:
+✅ Click bubble → Chat slides up (same as now)
+✅ Close chat → Bubble reappears in the same position
+✅ Fully responsive, smooth transition
+
+Accessibility:
+- aria-label="Open Finora Chat Assistant"
+- Tooltip: “Chat with Finora”
+
+---
+
+💫 3. (OPTIONAL POLISH)
+If possible, add a “scroll to latest” mini down-arrow button that only appears when the user scrolls up inside the chat. It should disappear automatically when they scroll back to the bottom.
+
+---
+
+✅ Keep all Finora AI chat assistant functionality, data fetching, and message logic intact.
+✅ Only adjust UI, scrolling behavior, and the floating chat bubble’s appearance.
+✅ Ensure design consistency with Finora’s purple-dark theme and professional tone.

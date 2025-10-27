@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, ArrowLeft } from "lucide-react";
+import { MessageCircle, X, Send, ArrowLeft, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,13 @@ export default function Finora() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  
+  // Separate refs for mobile and desktop
+  const mobileMessagesEndRef = useRef<HTMLDivElement>(null);
+  const mobileMessagesContainerRef = useRef<HTMLDivElement>(null);
+  const desktopMessagesEndRef = useRef<HTMLDivElement>(null);
+  const desktopMessagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Load chat history from localStorage
@@ -71,10 +77,52 @@ export default function Finora() {
     }
   }, [messages]);
 
-  // Auto-scroll to bottom
+  // Auto-scroll to bottom with improved reliability
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const scrollToEnd = () => {
+      // Scroll mobile if it exists (mobile view active)
+      if (mobileMessagesEndRef.current) {
+        mobileMessagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+      // Scroll desktop if it exists (desktop view active)
+      if (desktopMessagesEndRef.current) {
+        desktopMessagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+      }
+    };
+    
+    // Double RAF ensures layout is complete
+    requestAnimationFrame(() => {
+      requestAnimationFrame(scrollToEnd);
+    });
+  }, [messages, isTyping]);
+
+  // Detect scroll position to show/hide scroll-to-latest button
+  const handleMobileScroll = () => {
+    if (mobileMessagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = mobileMessagesContainerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    }
+  };
+
+  const handleDesktopScroll = () => {
+    if (desktopMessagesContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = desktopMessagesContainerRef.current;
+      const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+      setShowScrollButton(!isNearBottom);
+    }
+  };
+
+  const scrollToBottom = () => {
+    // Scroll mobile if active
+    if (mobileMessagesEndRef.current) {
+      mobileMessagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+    // Scroll desktop if active
+    if (desktopMessagesEndRef.current) {
+      desktopMessagesEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  };
 
   // Focus input when chat opens
   useEffect(() => {
@@ -233,19 +281,20 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
 
   return (
     <>
-      {/* Floating Chat Bubble - WhatsApp Style */}
+      {/* Floating Chat Bubble - WhatsApp AI Style */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           data-testid="button-open-finora"
           aria-label="Open Finora chat assistant"
+          title="Chat with Finora"
           className="fixed bottom-4 right-4 md:bottom-6 md:right-6 w-14 h-14 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 z-[1000]"
           style={{
-            backgroundColor: '#25D366',
+            background: 'linear-gradient(135deg, #007AFF, #9A6CFF)',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(37, 211, 102, 0.4)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25), 0 0 20px rgba(154, 108, 255, 0.4)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
@@ -278,7 +327,11 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div 
+              ref={mobileMessagesContainerRef}
+              onScroll={handleMobileScroll}
+              className="flex-1 overflow-y-auto p-4 space-y-4 pb-3 relative"
+            >
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -306,8 +359,20 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
                   </div>
                 </div>
               )}
-              <div ref={messagesEndRef} />
+              <div ref={mobileMessagesEndRef} />
             </div>
+
+            {/* Scroll to Latest Button - Mobile */}
+            {showScrollButton && (
+              <button
+                onClick={scrollToBottom}
+                className="absolute bottom-24 right-4 w-10 h-10 rounded-full bg-primary/90 hover:bg-primary shadow-lg flex items-center justify-center transition-all z-10 animate-in fade-in duration-200"
+                aria-label="Scroll to latest message"
+                data-testid="button-scroll-to-latest-mobile"
+              >
+                <ArrowDown className="h-5 w-5 text-primary-foreground" />
+              </button>
+            )}
 
             {/* Suggested Prompts (only show if no messages yet besides welcome) */}
             {messages.length <= 1 && (
@@ -353,7 +418,7 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
           </div>
 
           {/* Desktop: Floating window */}
-          <Card className="hidden md:block fixed bottom-24 right-6 w-[400px] h-[600px] shadow-2xl z-[1000] flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <Card className="hidden md:block fixed bottom-24 right-6 w-[400px] h-[600px] shadow-2xl z-[1000] flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300 relative">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-primary/10 to-purple-600/10">
               <div className="flex items-center gap-2">
@@ -373,7 +438,11 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div 
+              ref={desktopMessagesContainerRef}
+              onScroll={handleDesktopScroll}
+              className="flex-1 overflow-y-auto p-4 space-y-4 pb-3"
+            >
               {messages.map((msg) => (
                 <div
                   key={msg.id}
@@ -401,8 +470,20 @@ Try asking me something like "How much did I spend on food?" or "What's my budge
                   </div>
                 </div>
               )}
-              <div ref={messagesEndRef} />
+              <div ref={desktopMessagesEndRef} />
             </div>
+
+            {/* Scroll to Latest Button - Desktop */}
+            {showScrollButton && (
+              <button
+                onClick={scrollToBottom}
+                className="absolute bottom-28 right-4 w-10 h-10 rounded-full bg-primary/90 hover:bg-primary shadow-lg flex items-center justify-center transition-all z-10 animate-in fade-in duration-200"
+                aria-label="Scroll to latest message"
+                data-testid="button-scroll-to-latest-desktop"
+              >
+                <ArrowDown className="h-5 w-5 text-primary-foreground" />
+              </button>
+            )}
 
             {/* Suggested Prompts (only show if no messages yet besides welcome) */}
             {messages.length <= 1 && (
