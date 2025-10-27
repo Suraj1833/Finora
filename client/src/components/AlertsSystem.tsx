@@ -168,7 +168,7 @@ export default function AlertsSystem() {
 
   return (
     <div 
-      className="fixed z-50 flex flex-col gap-3 pointer-events-none"
+      className="alerts-system-container fixed z-50 flex flex-col gap-3 pointer-events-none"
       style={{
         top: "1rem",
         right: "1rem",
@@ -190,8 +190,7 @@ export default function AlertsSystem() {
           }
         }
       `}</style>
-      <div className="alerts-system-container flex flex-col gap-3">
-        {alerts.map((alert) => (
+      {alerts.map((alert) => (
           <Card
             key={alert.id}
             className={`pointer-events-auto ${getAlertStyles(alert.type)} border transition-all duration-300 ${
@@ -221,7 +220,6 @@ export default function AlertsSystem() {
             </div>
           </Card>
         ))}
-      </div>
     </div>
   );
 }
