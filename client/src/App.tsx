@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -32,12 +32,15 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <Router />
-        <Finora />
+        {/* ✅ Render AI Assistant only on Dashboard */}
+        {location === "/dashboard" && <Finora />}
       </TooltipProvider>
     </QueryClientProvider>
   );
