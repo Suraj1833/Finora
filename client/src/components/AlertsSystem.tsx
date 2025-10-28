@@ -168,39 +168,27 @@ export default function AlertsSystem() {
 
   return (
     <div 
-      className="alerts-system-container fixed z-50 flex flex-col gap-3 pointer-events-none"
+      className="fixed left-1/2 -translate-x-1/2 z-50 flex flex-col gap-3 pointer-events-none"
       style={{
-        top: "1rem",
-        right: "1rem",
-        maxWidth: "380px",
+        top: "72px",
+        maxWidth: "600px",
+        width: "calc(100vw - 2rem)",
       }}
       aria-live="polite"
       role="status"
       data-testid="alerts-container"
     >
-      <style>{`
-        @media (max-width: 768px) {
-          .alerts-system-container {
-            top: auto !important;
-            bottom: 1rem !important;
-            left: 50% !important;
-            right: auto !important;
-            transform: translateX(-50%) !important;
-            max-width: calc(100vw - 2rem) !important;
-          }
-        }
-      `}</style>
       {alerts.map((alert) => (
-          <Card
+          <div
             key={alert.id}
-            className={`pointer-events-auto ${getAlertStyles(alert.type)} border transition-all duration-300 ${
+            className={`pointer-events-auto ${getAlertStyles(alert.type)} shadow-lg rounded-xl px-6 py-3 transition-all duration-300 animate-slide-in ${
               visibleAlerts.has(alert.id)
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-2"
+                ? "opacity-100"
+                : "opacity-0"
             }`}
             data-testid={`alert-${alert.type}`}
           >
-            <div className="p-4 flex items-start gap-3">
+            <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">
                 {getAlertIcon(alert.type)}
               </div>
@@ -218,7 +206,7 @@ export default function AlertsSystem() {
                 <span className="sr-only">Dismiss alert</span>
               </Button>
             </div>
-          </Card>
+          </div>
         ))}
     </div>
   );
