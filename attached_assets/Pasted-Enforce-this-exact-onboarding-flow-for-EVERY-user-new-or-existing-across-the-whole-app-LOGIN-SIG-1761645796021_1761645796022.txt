@@ -1,0 +1,185 @@
+Enforce this exact onboarding flow for EVERY user (new or existing) across the whole app:
+
+LOGIN/SIGNUP -> CONNECT ACCOUNTS -> SETUP BUDGET -> DASHBOARD
+
+No one should land on /dashboard until both steps are completed.
+If a user tries to navigate directly to /dashboard or any other route before finishing, redirect them to the next required step.
+
+Make the following concrete code changes:
+
+1) STORE: centralize session + onboarding flags with persistence
+   - File: src/store.ts (or wherever our store is; update the existing one)
+   - Add/persist these fields:
+       isAuthenticated: boolean
+       user: {
+         isFirstTime: boolean
+         hasConnectedAccounts: boolean
+         hasSetBudget: boolean
+       }
+       accounts: any[]   // keep if already present
+   - Add these functions (and export them):
+       startSessionOnAuth(): sets isAuthenticated=true and user = { isFirstTime: true, hasConnectedAccounts: false, hasSetBudget: false }
+       completeAccounts(): sets user.hasConnectedAccounts=true
+       completeBudget(): sets user.hasSetBudget=true
+       resetSession(): clears state and localStorage
+   - Ensure all state is saved to localStorage and hydrated on load.
+
+   Example (adapt to our current store structure):
+   ----------------------------------------------------------------
+   type User = {
+     isFirstTime: boolean;
+     hasConnectedAccounts: boolean;
+     hasSetBudget: boolean;
+   };
+
+   type AppState = {
+     isAuthenticated: boolean;
+     user: User | null;
+     accounts: any[];
+   };
+
+   const DEFAULT_STATE: AppState = {
+     isAuthenticated: false,
+     user: null,
+     accounts: [],
+   };
+
+   let state: AppState = JSON.parse(localStorage.getItem("finora-state") || "null") || DEFAULT_STATE;
+
+   export const getState = () => state;
+
+   const save = () => localStorage.setItem("finora-state", JSON.stringify(state));
+
+   export const startSessionOnAuth = () => {
+     state.isAuthenticated = true;
+     state.user = { isFirstTime: true, hasConnectedAccounts: false, hasSetBudget: false };
+     save();
+   };
+
+   export const completeAccounts = () => {
+     if (!state.user) return;
+     state.user.hasConnectedAccounts = true;
+     save();
+   };
+
+   export const completeBudget = () => {
+     if (!state.user) return;
+     state.user.hasSetBudget = true;
+     save();
+   };
+
+   export const resetSession = () => {
+     state = { ...DEFAULT_STATE };
+     save();
+   };
+
+   // Keep any existing exports (e.g., updateUserOnboarding, etc.) but prefer the above helpers.
+   ----------------------------------------------------------------
+
+2) LOGIN & SIGNUP pages: ALWAYS begin the flow at /connect
+   - Files: src/pages/login.tsx and src/pages/signup.tsx (adjust paths if different)
+   - On any auth button click (Google / Phone / Email), call startSessionOnAuth() then navigate to "/connect".
+   - Example handler to use on all buttons:
+     ----------------------------------------------------------------
+     import { useLocation } from "wouter";
+     import { startSessionOnAuth } from "@/store";
+
+     const [, setLocation] = useLocation();
+
+     const handleAuth = () => {
+       startSessionOnAuth();
+       setLocation("/connect");
+     };
+     // Pass handleAuth to all login/signup buttons
+     ----------------------------------------------------------------
+
+3) CONNECT ACCOUNTS page: when user clicks "Continue/Next", mark accounts as connected and go to budget
+   - File: src/pages/ConnectAccountsPage.tsx
+   - On success/continue:
+     ----------------------------------------------------------------
+     import { completeAccounts } from "@/store";
+     completeAccounts();
+     setLocation("/setup-budget");
+     ----------------------------------------------------------------
+
+4) SETUP BUDGET page: when budget is set/continue, mark budget done and go to dashboard
+   - File: src/pages/SetupBudgetPage.tsx
+   - On continue:
+     ----------------------------------------------------------------
+     import { completeBudget } from "@/store";
+     completeBudget();
+     setLocation("/dashboard");
+     ----------------------------------------------------------------
+
+5) ROUTE GUARD: Replace OnboardingFlow with a strict sequential guard (no auto-jumps to /dashboard)
+   - File: src/components/OnboardingFlow.tsx (replace the component body with this)
+   ----------------------------------------------------------------
+   import { useEffect } from "react";
+   import { useLocation } from "wouter";
+   import { getState } from "@/store";
+
+   export default function OnboardingFlow({ children }: { children: React.ReactNode }) {
+     const [location, setLocation] = useLocation();
+
+     useEffect(() => {
+       const { isAuthenticated, user } = getState();
+
+       const AUTH_PAGES = ["/", "/login", "/signup"];
+       const FLOW_PAGES = ["/connect", "/setup-budget"];
+       const DASHBOARD = "/dashboard";
+
+       // Not authenticated: only allow auth pages
+       if (!isAuthenticated) {
+         if (!AUTH_PAGES.includes(location)) {
+           setLocation("/login");
+         }
+         return;
+       }
+
+       // Authenticated: compute next required step
+       const needsAccounts = !user?.hasConnectedAccounts;
+       const needsBudget = !user?.hasSetBudget;
+
+       const nextStep = needsAccounts ? "/connect" : needsBudget ? "/setup-budget" : null;
+
+       // If user is on an auth page but already authenticated, push them into the flow
+       if (AUTH_PAGES.includes(location)) {
+         setLocation(nextStep ?? DASHBOARD);
+         return;
+       }
+
+       // Enforce sequential flow on any page
+       if (nextStep && location !== nextStep) {
+         setLocation(nextStep);
+         return;
+       }
+
+       // If both complete and user tries to access flow pages, send to dashboard
+       if (!nextStep && FLOW_PAGES.includes(location)) {
+         setLocation(DASHBOARD);
+         return;
+       }
+     }, [location, setLocation]);
+
+     return <>{children}</>;
+   }
+   ----------------------------------------------------------------
+
+6) LOGOUT (if present): call resetSession() and redirect to /login.
+   - Ensure page reload persists state and guard continues to enforce the flow.
+
+7) Remove or update any other redirects that sent users to /dashboard automatically (e.g., legacy logic in OnboardingFlow or pages). The guard above is the single source of truth.
+
+8) TESTS to run manually:
+   - From /login or /signup, clicking ANY button must go to /connect.
+   - From /connect, clicking continue goes to /setup-budget.
+   - From /setup-budget, clicking continue goes to /dashboard.
+   - Trying to open /dashboard before finishing redirects you to the correct next step.
+   - Refresh at each step keeps you on the same step (state persists).
+   - Existing/returning users ALSO go through the same flow on each new auth (because startSessionOnAuth resets flags).
+
+Make all edits, run the app, and show me a preview confirming:
+1) auth -> /connect
+2) connect -> /setup-budget
+3) setup-budget -> /dashboard
+and that direct navigation to /dashboard before completion is blocked.

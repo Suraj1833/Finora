@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { IndianRupee } from "lucide-react";
-import { setMonthlyBudget, updateUserOnboarding } from "@/store";
+import { setMonthlyBudget, completeBudget } from "@/store";
 
 export default function SetupBudgetPage() {
   const [, setLocation] = useLocation();
@@ -22,11 +22,8 @@ export default function SetupBudgetPage() {
       return;
     }
     
-    // Update budget and mark as set
     setMonthlyBudget(budgetAmount);
-    updateUserOnboarding({ hasSetBudget: true, isFirstTime: false });
-    
-    // Navigate to dashboard
+    completeBudget();
     setLocation("/dashboard");
   };
 

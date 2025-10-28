@@ -1,17 +1,12 @@
 import { useLocation } from "wouter";
 import SignupCard from "@/components/SignupCard";
-import { updateUserOnboarding } from "@/store";
+import { startSessionOnAuth } from "@/store";
 
 export default function SignupPage() {
   const [, setLocation] = useLocation();
 
   const handleSignup = () => {
-    // Mark as first-time user on signup
-    updateUserOnboarding({
-      isFirstTime: true,
-      hasConnectedAccounts: false,
-      hasSetBudget: false,
-    });
+    startSessionOnAuth();
     setLocation("/connect");
   };
 

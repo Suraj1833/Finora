@@ -10,92 +10,14 @@ import {
 } from "@/components/ui/card";
 import { Smartphone, Mail } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
-import {
-  updateUserOnboarding,
-  addAccount,
-  addTx,
-  setMonthlyBudget,
-  getState,
-} from "@/store";
+import { startSessionOnAuth } from "@/store";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
 
-  const handleLogin = () => {
-    // Restore user state
-    updateUserOnboarding({
-      isFirstTime: true,
-      hasConnectedAccounts: true,
-      hasSetBudget: true,
-    });
-
-    // Only restore sample data if accounts are empty (prevent duplicates on subsequent logins)
-    const state = getState();
-    if (state.accounts.length === 0) {
-      // Restore sample accounts and capture their IDs
-      const bankAccount = addAccount({
-        type: "bank",
-        name: "HDFC Savings",
-        balance: 45230,
-      });
-      const upiAccount = addAccount({
-        type: "upi",
-        name: "Google Pay",
-        balance: 3420,
-      });
-      const walletAccount = addAccount({
-        type: "wallet",
-        name: "Paytm Wallet",
-        balance: 1250,
-      });
-      const cardAccount = addAccount({
-        type: "card",
-        name: "ICICI Credit Card",
-        balance: 12800,
-      });
-
-      // Restore sample transactions using actual account IDs
-      addTx({
-        accountId: upiAccount.id,
-        merchant: "Swiggy",
-        amount: 450,
-        dateISO: "2025-10-27T14:30:00Z",
-        category: "Food",
-      });
-      addTx({
-        accountId: cardAccount.id,
-        merchant: "Amazon",
-        amount: 2499,
-        dateISO: "2025-10-26T16:20:00Z",
-        category: "Shopping",
-      });
-      addTx({
-        accountId: upiAccount.id,
-        merchant: "Zomato",
-        amount: 680,
-        dateISO: "2025-10-26T20:15:00Z",
-        category: "Food",
-      });
-      addTx({
-        accountId: walletAccount.id,
-        merchant: "BookMyShow",
-        amount: 600,
-        dateISO: "2025-10-25T19:00:00Z",
-        category: "Entertainment",
-      });
-      addTx({
-        accountId: upiAccount.id,
-        merchant: "Uber",
-        amount: 230,
-        dateISO: "2025-10-27T11:00:00Z",
-        category: "Travel",
-      });
-
-      // Set budget
-      setMonthlyBudget(40000);
-    }
-
-    setLocation("/dashboard");
+  const handleAuth = () => {
+    startSessionOnAuth();
+    setLocation("/connect");
   };
 
   const handleGoToSignup = () => {
@@ -124,7 +46,7 @@ export default function LoginPage() {
           <Button
             variant="outline"
             className="w-full h-12 text-base gap-3"
-            onClick={handleLogin}
+            onClick={handleAuth}
             data-testid="button-google-login"
           >
             <SiGoogle className="h-5 w-5" />
@@ -133,7 +55,7 @@ export default function LoginPage() {
           <Button
             variant="outline"
             className="w-full h-12 text-base gap-3"
-            onClick={handleLogin}
+            onClick={handleAuth}
             data-testid="button-phone-login"
           >
             <Smartphone className="h-5 w-5" />
@@ -150,7 +72,7 @@ export default function LoginPage() {
           <Button
             variant="default"
             className="w-full h-12 text-base gap-3"
-            onClick={handleLogin}
+            onClick={handleAuth}
             data-testid="button-email-login"
           >
             <Mail className="h-5 w-5" />

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import AccountConnectionCard from "@/components/AccountConnectionCard";
 import AppNavbar from "@/components/AppNavbar";
 import { ArrowRight } from "lucide-react";
-import { updateUserOnboarding } from "@/store";
+import { completeAccounts } from "@/store";
 
 export default function ConnectAccountsPage() {
   const [, setLocation] = useLocation();
@@ -31,16 +31,12 @@ export default function ConnectAccountsPage() {
   const hasAnyConnection = Object.values(connectedAccounts).some(Boolean);
 
   const handleContinue = () => {
-    // Mark accounts as connected in onboarding state
-    updateUserOnboarding({ hasConnectedAccounts: true });
-    
-    // Navigate to setup budget or dashboard
+    completeAccounts();
     setLocation("/setup-budget");
   };
 
   const handleSkip = () => {
-    // User skipped account connection
-    updateUserOnboarding({ hasConnectedAccounts: false });
+    completeAccounts();
     setLocation("/setup-budget");
   };
 

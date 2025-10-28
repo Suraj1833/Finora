@@ -33,6 +33,7 @@ export interface UserOnboardingState {
 }
 
 interface AppState {
+  isAuthenticated: boolean;
   accounts: Account[];
   transactions: Transaction[];
   derived: DerivedState;
@@ -62,6 +63,7 @@ function notifySubscribers() {
 
 // Initialize with mock data
 const initialState: AppState = {
+  isAuthenticated: false,
   accounts: [
     { id: "acc1", type: "bank", name: "HDFC Savings", balance: 45230 },
     { id: "acc2", type: "upi", name: "Google Pay", balance: 3420 },
@@ -164,6 +166,7 @@ export function setState(patch: Partial<AppState>) {
 // Reset state to logged out (empty) state
 export function resetState() {
   const emptyState: AppState = {
+    isAuthenticated: false,
     accounts: [],
     transactions: [],
     derived: {
@@ -318,6 +321,37 @@ export function updateUserOnboarding(updates: Partial<UserOnboardingState>) {
   currentState.user = { ...currentState.user, ...updates };
   persistState();
   notifySubscribers();
+}
+
+// Session management functions for strict onboarding flow
+export function startSessionOnAuth() {
+  currentState.isAuthenticated = true;
+  currentState.user = {
+    isFirstTime: true,
+    hasConnectedAccounts: false,
+    hasSetBudget: false,
+  };
+  persistState();
+  notifySubscribers();
+}
+
+export function completeAccounts() {
+  if (!currentState.user) return;
+  currentState.user.hasConnectedAccounts = true;
+  persistState();
+  notifySubscribers();
+}
+
+export function completeBudget() {
+  if (!currentState.user) return;
+  currentState.user.hasSetBudget = true;
+  currentState.user.isFirstTime = false;
+  persistState();
+  notifySubscribers();
+}
+
+export function resetSession() {
+  resetState();
 }
 
 export function setMonthlyBudget(budget: number) {
