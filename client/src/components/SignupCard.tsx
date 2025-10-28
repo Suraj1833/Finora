@@ -13,9 +13,11 @@ export default function SignupCard({ onGoogleSignup, onPhoneSignup }: SignupCard
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-4 text-center pb-6">
         <div className="flex justify-center mb-2">
-          <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-2xl font-bold text-primary-foreground font-mono">F</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Finora Logo"
+            className="h-14 w-14 object-contain rounded-lg"
+          />
         </div>
         <div className="space-y-2">
           <CardTitle className="text-3xl">Welcome to Finora</CardTitle>
