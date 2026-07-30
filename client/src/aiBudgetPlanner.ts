@@ -149,7 +149,8 @@ export function recalcAIInsights(): AIBudgetInsights {
   // Calculate totals
   const suggestedTotalBudget = Object.values(categoryBudgets).reduce((sum, val) => sum + (val || 0), 0);
   const totalProjectedSpend = Object.values(projectedSpend).reduce((sum, val) => sum + (val || 0), 0);
-  const projectedSavings = suggestedTotalBudget - totalProjectedSpend;
+  const userBudget = derived.monthlyBudget > 0 ? derived.monthlyBudget : suggestedTotalBudget;
+  const projectedSavings = userBudget - totalProjectedSpend;
   
   // Identify overspending
   const overspendingCategories = identifyOverspending(projectedSpend, categoryBudgets);

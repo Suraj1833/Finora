@@ -5,7 +5,7 @@ import TransactionList from "@/components/TransactionList";
 import AIInsightsCard from "@/components/AIInsightsCard";
 import AlertsSystem from "@/components/AlertsSystem";
 import { useLocation } from "wouter";
-import { getState, updateTransactionCategory } from "@/store";
+import { getState, updateTransactionCategory, subscribe } from "@/store";
 import { updateMerchantCategory, type Category } from "@/categorize";
 import { useState, useEffect } from "react";
 
@@ -50,11 +50,10 @@ function formatRelativeDate(isoDate: string): string {
 
 export default function FinanceDashboardPage() {
   const [, setLocation] = useLocation();
-  const [refreshKey, setRefreshKey] = useState(0);
-  const state = getState();
+  const [state, setState] = useState(getState);
 
   useEffect(() => {
-    // Initial load - no action needed
+    return subscribe(() => setState(getState()));
   }, []);
 
   const { derived, transactions } = state;
@@ -93,10 +92,6 @@ export default function FinanceDashboardPage() {
       
       // Update the merchant mapping for future auto-categorization
       updateMerchantCategory(tx.merchant, newCategory);
-      
-      // Force re-render by updating refresh key
-      // Note: AI insights will auto-update via store.subscribe()
-      setRefreshKey(prev => prev + 1);
     }
   };
 

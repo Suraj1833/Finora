@@ -8,7 +8,7 @@ interface BudgetProgressProps {
 }
 
 export default function BudgetProgress({ total, spent, currency = "₹" }: BudgetProgressProps) {
-  const percentage = (spent / total) * 100;
+  const percentage = total > 0 ? (spent / total) * 100 : 0;
   const remaining = total - spent;
 
   const formatAmount = (amount: number) => {

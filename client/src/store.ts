@@ -45,6 +45,87 @@ const STORAGE_KEY = "autotrack_state";
 // Counter for ensuring unique IDs
 let idCounter = 0;
 
+const DEMO_ACCOUNTS: Account[] = [
+  { id: "acc1", type: "bank", name: "HDFC Savings", balance: 45230 },
+  { id: "acc2", type: "upi", name: "Google Pay", balance: 3420 },
+  { id: "acc3", type: "wallet", name: "Paytm Wallet", balance: 1250 },
+  { id: "acc4", type: "card", name: "ICICI Credit Card", balance: 12800 },
+];
+
+type DemoTransactionTemplate = Omit<Transaction, "id" | "dateISO"> & { daysAgo: number };
+
+const DEMO_TRANSACTION_TEMPLATES: DemoTransactionTemplate[] = [
+  { accountId: "acc2", merchant: "Swiggy", amount: 450, daysAgo: 3, category: "Food" },
+  { accountId: "acc2", merchant: "Uber", amount: 230, daysAgo: 3, category: "Travel" },
+  { accountId: "acc4", merchant: "Amazon", amount: 2499, daysAgo: 4, category: "Shopping" },
+  { accountId: "acc2", merchant: "Zomato", amount: 680, daysAgo: 4, category: "Food" },
+  { accountId: "acc4", merchant: "BookMyShow", amount: 600, daysAgo: 5, category: "Entertainment" },
+  { accountId: "acc1", merchant: "Swiggy", amount: 520, daysAgo: 6, category: "Food" },
+  { accountId: "acc3", merchant: "Uber", amount: 180, daysAgo: 6, category: "Travel" },
+  { accountId: "acc4", merchant: "Flipkart", amount: 1899, daysAgo: 7, category: "Shopping" },
+  { accountId: "acc2", merchant: "Starbucks", amount: 350, daysAgo: 7, category: "Food" },
+  { accountId: "acc4", merchant: "Netflix", amount: 649, daysAgo: 8, category: "Entertainment" },
+  { accountId: "acc1", merchant: "Zomato", amount: 890, daysAgo: 9, category: "Food" },
+  { accountId: "acc2", merchant: "Ola", amount: 145, daysAgo: 9, category: "Travel" },
+  { accountId: "acc4", merchant: "Amazon", amount: 3200, daysAgo: 10, category: "Shopping" },
+  { accountId: "acc3", merchant: "Swiggy", amount: 620, daysAgo: 11, category: "Food" },
+  { accountId: "acc2", merchant: "BookMyShow", amount: 450, daysAgo: 12, category: "Entertainment" },
+  { accountId: "acc1", merchant: "BigBasket", amount: 1850, daysAgo: 13, category: "Shopping" },
+  { accountId: "acc2", merchant: "Spotify", amount: 119, daysAgo: 15, category: "Entertainment" },
+  { accountId: "acc4", merchant: "Zomato", amount: 750, daysAgo: 16, category: "Food" },
+];
+
+function daysAgoISO(daysAgo: number): string {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  return date.toISOString();
+}
+
+function createDemoTransactions(): Transaction[] {
+  return DEMO_TRANSACTION_TEMPLATES.map((template, index) => {
+    const { daysAgo, ...rest } = template;
+    return {
+      ...rest,
+      id: `tx${index + 1}`,
+      dateISO: daysAgoISO(daysAgo),
+    };
+  });
+}
+
+function migrateStaleTransactionDates(transactions: Transaction[]): Transaction[] {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+
+  const hasCurrentMonthTx = transactions.some((tx) => {
+    const txDate = new Date(tx.dateISO);
+    return txDate.getMonth() === currentMonth && txDate.getFullYear() === currentYear;
+  });
+
+  if (hasCurrentMonthTx) {
+    return transactions;
+  }
+
+  const sorted = [...transactions].sort(
+    (a, b) => new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime()
+  );
+  const daysAgoById = new Map(sorted.map((tx, index) => [tx.id, index]));
+
+  return transactions.map((tx) => ({
+    ...tx,
+    dateISO: daysAgoISO(daysAgoById.get(tx.id) ?? 0),
+  }));
+}
+
+function seedDemoDataIfEmpty() {
+  if (currentState.accounts.length === 0) {
+    currentState.accounts = [...DEMO_ACCOUNTS];
+  }
+  if (currentState.transactions.length === 0) {
+    currentState.transactions = createDemoTransactions();
+  }
+}
+
 // Store subscribers - notify when state changes
 type Subscriber = () => void;
 const subscribers: Set<Subscriber> = new Set();
@@ -64,32 +145,8 @@ function notifySubscribers() {
 // Initialize with mock data
 const initialState: AppState = {
   isAuthenticated: false,
-  accounts: [
-    { id: "acc1", type: "bank", name: "HDFC Savings", balance: 45230 },
-    { id: "acc2", type: "upi", name: "Google Pay", balance: 3420 },
-    { id: "acc3", type: "wallet", name: "Paytm Wallet", balance: 1250 },
-    { id: "acc4", type: "card", name: "ICICI Credit Card", balance: 12800 },
-  ],
-  transactions: [
-    { id: "tx1", accountId: "acc2", merchant: "Swiggy", amount: 450, dateISO: "2025-10-27T14:30:00Z", category: "Food" },
-    { id: "tx2", accountId: "acc2", merchant: "Uber", amount: 230, dateISO: "2025-10-27T11:00:00Z", category: "Travel" },
-    { id: "tx3", accountId: "acc4", merchant: "Amazon", amount: 2499, dateISO: "2025-10-26T16:20:00Z", category: "Shopping" },
-    { id: "tx4", accountId: "acc2", merchant: "Zomato", amount: 680, dateISO: "2025-10-26T20:15:00Z", category: "Food" },
-    { id: "tx5", accountId: "acc4", merchant: "BookMyShow", amount: 600, dateISO: "2025-10-25T19:00:00Z", category: "Entertainment" },
-    { id: "tx6", accountId: "acc1", merchant: "Swiggy", amount: 520, dateISO: "2025-10-24T13:45:00Z", category: "Food" },
-    { id: "tx7", accountId: "acc3", merchant: "Uber", amount: 180, dateISO: "2025-10-24T09:30:00Z", category: "Travel" },
-    { id: "tx8", accountId: "acc4", merchant: "Flipkart", amount: 1899, dateISO: "2025-10-23T15:10:00Z", category: "Shopping" },
-    { id: "tx9", accountId: "acc2", merchant: "Starbucks", amount: 350, dateISO: "2025-10-23T11:00:00Z", category: "Food" },
-    { id: "tx10", accountId: "acc4", merchant: "Netflix", amount: 649, dateISO: "2025-10-22T00:00:00Z", category: "Entertainment" },
-    { id: "tx11", accountId: "acc1", merchant: "Zomato", amount: 890, dateISO: "2025-10-21T20:30:00Z", category: "Food" },
-    { id: "tx12", accountId: "acc2", merchant: "Ola", amount: 145, dateISO: "2025-10-21T08:15:00Z", category: "Travel" },
-    { id: "tx13", accountId: "acc4", merchant: "Amazon", amount: 3200, dateISO: "2025-10-20T14:00:00Z", category: "Shopping" },
-    { id: "tx14", accountId: "acc3", merchant: "Swiggy", amount: 620, dateISO: "2025-10-19T19:45:00Z", category: "Food" },
-    { id: "tx15", accountId: "acc2", merchant: "BookMyShow", amount: 450, dateISO: "2025-10-18T18:30:00Z", category: "Entertainment" },
-    { id: "tx16", accountId: "acc1", merchant: "BigBasket", amount: 1850, dateISO: "2025-10-17T10:00:00Z", category: "Shopping" },
-    { id: "tx17", accountId: "acc2", merchant: "Spotify", amount: 119, dateISO: "2025-10-15T00:00:00Z", category: "Entertainment" },
-    { id: "tx18", accountId: "acc4", merchant: "Zomato", amount: 750, dateISO: "2025-10-14T21:00:00Z", category: "Food" },
-  ],
+  accounts: [...DEMO_ACCOUNTS],
+  transactions: createDemoTransactions(),
   derived: {
     totalSpentThisMonth: 0,
     spendByCategory: new Map(),
@@ -113,6 +170,14 @@ let currentState: AppState = (() => {
       // Convert spendByCategory back to Map
       if (parsed.derived) {
         parsed.derived.spendByCategory = new Map(Object.entries(parsed.derived.spendByCategory || {}));
+      }
+      if (parsed.transactions?.length > 0) {
+        parsed.transactions = migrateStaleTransactionDates(parsed.transactions);
+      } else if (parsed.user?.hasConnectedAccounts) {
+        parsed.transactions = createDemoTransactions();
+        if (!parsed.accounts?.length) {
+          parsed.accounts = [...DEMO_ACCOUNTS];
+        }
       }
       // Merge with initialState to ensure all required properties exist
       return {
@@ -277,7 +342,7 @@ export function recalcDerived() {
   const monthlyBudget = currentState.derived.monthlyBudget;
 
   // Spent percentage
-  const spentPercent = (totalSpentThisMonth / monthlyBudget) * 100;
+  const spentPercent = monthlyBudget > 0 ? (totalSpentThisMonth / monthlyBudget) * 100 : 0;
 
   // Detect recurring transactions (merchants appearing multiple times)
   const merchantFrequency = new Map<string, Transaction[]>();
@@ -337,16 +402,20 @@ export function startSessionOnAuth() {
 
 export function completeAccounts() {
   if (!currentState.user) return;
+  seedDemoDataIfEmpty();
   currentState.user.hasConnectedAccounts = true;
   persistState();
+  recalcDerived();
   notifySubscribers();
 }
 
 export function completeBudget() {
   if (!currentState.user) return;
+  seedDemoDataIfEmpty();
   currentState.user.hasSetBudget = true;
   currentState.user.isFirstTime = false;
   persistState();
+  recalcDerived();
   notifySubscribers();
 }
 
